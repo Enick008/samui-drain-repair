@@ -6,7 +6,7 @@
     <title>ระบบแจ้งซ่อมฝาท่อระบายน้ำ - เทศบาลนครเกาะสมุย</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Leaflet CSS สำหรับแสดงแผนที่ -->
+    <!-- Leaflet CSS สำหรับแผนที่ -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body { font-family: 'Sarabun', sans-serif; }
@@ -21,11 +21,10 @@
             <p class="text-blue-100 text-sm mt-1">เทศบาลนครเกาะสมุย</p>
         </div>
 
-        <!-- Navigation Tabs -->
+        <!-- Navigation Tabs (เหลือ 3 แท็บหลักที่กระชับขึ้น) -->
         <div class="flex border-b border-slate-200 bg-slate-50 flex-wrap">
             <button onclick="switchTab('form')" id="tab-form" class="flex-1 py-3 text-center font-semibold text-blue-600 border-b-2 border-blue-600 bg-white transition">📝 แจ้งซ่อมใหม่</button>
-            <button onclick="switchTab('search')" id="tab-search" class="flex-1 py-3 text-center font-medium text-slate-600 hover:text-blue-600 transition">🔍 ค้นหา / แก้ไข</button>
-            <button onclick="switchTab('filter')" id="tab-filter" class="flex-1 py-3 text-center font-medium text-slate-600 hover:text-blue-600 transition">📋 กรองตามสถานะ/ตำบล</button>
+            <button onclick="switchTab('manage')" id="tab-manage" class="flex-1 py-3 text-center font-medium text-slate-600 hover:text-blue-600 transition">🔍 ค้นหา / กรอง / จัดการ</button>
             <button onclick="switchTab('stats')" id="tab-stats" class="flex-1 py-3 text-center font-medium text-slate-600 hover:text-blue-600 transition">📊 สถิติภาพรวม</button>
         </div>
 
@@ -107,51 +106,57 @@
             </form>
         </div>
 
-        <!-- Tab 2: ค้นหาและแก้ไขสถานะด้วยรหัส -->
-        <div id="section-search" class="p-6 md:p-8 hidden space-y-6">
-            <div class="flex gap-2">
-                <input type="text" id="searchId" placeholder="กรอกรหัสรายงาน เช่น R20261118-..." class="flex-1 border border-slate-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                <button onclick="searchReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium">🔍 ค้นหา</button>
-            </div>
-            <div id="searchResult" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-4">
-                <h3 class="font-bold text-slate-700 border-b pb-2">รายละเอียดเคส: <span id="resReportId" class="text-blue-600 font-mono"></span></h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-slate-600">
-                    <p><strong>วันที่แจ้ง:</strong> <span id="resDate"></span></p>
-                    <p><strong>ผู้แจ้ง:</strong> <span id="resInformant"></span> (<span id="resPhone"></span>)</p>
-                    <p><strong>ตำบล:</strong> <span id="resDistrict"></span></p>
-                    <p><strong>ตำแหน่ง:</strong> <span id="resLocation"></span></p>
-                    <p><strong>ลักษณะ:</strong> <span id="resDamage"></span></p>
-                    <p><strong>อัปเดตล่าสุด:</strong> <span id="resUpdateDate"></span></p>
+        <!-- Tab 2: ค้นหา / กรอง / จัดการสถานะ (รวมกันในหน้าเดียว) -->
+        <div id="section-manage" class="p-6 md:p-8 hidden space-y-6">
+            <!-- ส่วนที่ 1: ค้นหาด้วยรหัสรายงาน -->
+            <div class="bg-blue-50/50 border border-blue-100 p-4 rounded-xl space-y-3">
+                <label class="block text-sm font-semibold text-blue-900">🔍 ค้นหาแบบระบุรหัสรายงาน (เพื่อแก้ไขสถานะ)</label>
+                <div class="flex gap-2">
+                    <input type="text" id="searchId" placeholder="กรอกรหัสรายงาน เช่น R20261118-..." class="flex-1 border border-slate-300 rounded-lg px-4 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <button onclick="searchReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium">ค้นหา</button>
                 </div>
-                <div class="pt-4 border-t border-slate-200 space-y-3">
-                    <h4 class="font-semibold text-sm text-slate-700">อัปเดตสถานะการดำเนินการ</h4>
-                    <select id="updateStatus" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
-                        <option value="รอดำเนินการ">รอดำเนินการ</option>
-                        <option value="อยู่ระหว่างดำเนินการ">อยู่ระหว่างดำเนินการ</option>
-                        <option value="ดำเนินการแล้ว">ดำเนินการแล้ว</option>
-                    </select>
-                    <input type="text" id="updateNote" placeholder="ระบุหมายเหตุเพิ่มเติม (ถ้ามี)" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
-                    <button onclick="updateStatus()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition">💾 บันทึกการเปลี่ยนแปลงสถานะ</button>
-                </div>
-            </div>
-        </div>
 
-        <!-- Tab 3: กรองตามสถานะและตำบล -->
-        <div id="section-filter" class="p-6 md:p-8 hidden space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <div>
-                    <label class="block text-xs text-slate-500 mb-1">กรองตามสถานะ</label>
-                    <select id="filterStatus" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
-                        <option value="ทั้งหมด">ทั้งหมด</option>
+                <!-- ผลการค้นหาและฟอร์มแก้ไขสถานะ -->
+                <div id="searchResult" class="hidden bg-white border border-slate-200 rounded-xl p-4 space-y-3 mt-3">
+                    <h4 class="font-bold text-slate-700 border-b pb-2">เคส: <span id="resReportId" class="text-blue-600 font-mono"></span></h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-slate-600">
+                        <p><strong>วันที่แจ้ง:</strong> <span id="resDate"></span></p>
+                        <p><strong>ผู้แจ้ง:</strong> <span id="resInformant"></span> (<span id="resPhone"></span>)</p>
+                        <p><strong>ตำบล:</strong> <span id="resDistrict"></span> | <strong>ลักษณะ:</strong> <span id="resDamage"></span></p>
+                        <p><strong>ตำแหน่ง:</strong> <span id="resLocation"></span></p>
+                    </div>
+                    <div class="pt-2 border-t border-slate-100 space-y-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs text-slate-500 mb-1">สถานะ</label>
+                                <select id="updateStatus" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white">
+                                    <option value="รอดำเนินการ">รอดำเนินการ</option>
+                                    <option value="อยู่ระหว่างดำเนินการ">อยู่ระหว่างดำเนินการ</option>
+                                    <option value="ดำเนินการแล้ว">ดำเนินการแล้ว</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-500 mb-1">หมายเหตุเพิ่มเติม</label>
+                                <input type="text" id="updateNote" placeholder="ระบุหมายเหตุ" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white">
+                            </div>
+                        </div>
+                        <button onclick="updateStatus()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg text-sm font-medium transition">💾 บันทึกการเปลี่ยนแปลงสถานะ</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ส่วนที่ 2: กรองภาพรวมตามสถานะและตำบล -->
+            <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-3">
+                <label class="block text-sm font-semibold text-slate-700">📋 กรองรายการทั้งหมด (ตามสถานะ หรือ ตำบล)</label>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <select id="filterStatus" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                        <option value="ทั้งหมด">สถานะ: ทั้งหมด</option>
                         <option value="รอดำเนินการ">รอดำเนินการ</option>
                         <option value="อยู่ระหว่างดำเนินการ">อยู่ระหว่างดำเนินการ</option>
                         <option value="ดำเนินการแล้ว">ดำเนินการแล้ว</option>
                     </select>
-                </div>
-                <div>
-                    <label class="block text-xs text-slate-500 mb-1">กรองตามตำบล</label>
-                    <select id="filterDistrict" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
-                        <option value="ทั้งหมด">ทั้งหมด</option>
+                    <select id="filterDistrict" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                        <option value="ทั้งหมด">ตำบล: ทั้งหมด</option>
                         <option value="บ่อผุด">บ่อผุด</option>
                         <option value="อ่างทอง">อ่างทอง</option>
                         <option value="แม่น้ำ">แม่น้ำ</option>
@@ -160,30 +165,29 @@
                         <option value="ตลิ่งงาม">ตลิ่งงาม</option>
                         <option value="หน้าเมือง">หน้าเมือง</option>
                     </select>
+                    <button onclick="loadFilteredData()" class="bg-slate-700 hover:bg-slate-800 text-white py-2 rounded-lg text-sm font-medium">🔍 กรองข้อมูล</button>
                 </div>
-                <div class="flex items-end">
-                    <button onclick="loadFilteredData()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-medium">🔍 ค้นหาข้อมูล</button>
+
+                <div class="overflow-x-auto mt-3">
+                    <table class="w-full text-left text-sm text-slate-600 border-collapse bg-white rounded-lg overflow-hidden border border-slate-200">
+                        <thead>
+                            <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 text-xs">
+                                <th class="p-2.5">รหัสรายงาน</th>
+                                <th class="p-2.5">วันที่แจ้ง</th>
+                                <th class="p-2.5">ตำบล</th>
+                                <th class="p-2.5">ตำแหน่ง</th>
+                                <th class="p-2.5">สถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="filterTableBody">
+                            <tr><td colspan="5" class="p-4 text-center text-slate-400">กดปุ่ม "กรองข้อมูล" เพื่อแสดงรายการ</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm text-slate-600 border-collapse">
-                    <thead>
-                        <tr class="bg-slate-100 border-b border-slate-200 text-slate-700">
-                            <th class="p-3">รหัสรายงาน</th>
-                            <th class="p-3">วันที่แจ้ง</th>
-                            <th class="p-3">ตำบล</th>
-                            <th class="p-3">ตำแหน่ง</th>
-                            <th class="p-3">สถานะ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="filterTableBody">
-                        <tr><td colspan="5" class="p-4 text-center text-slate-400">กรุณากดค้นหาข้อมูล</td></tr>
-                    </tbody>
-                </table>
             </div>
         </div>
 
-        <!-- Tab 4: สถิติ -->
+        <!-- Tab 3: สถิติ -->
         <div id="section-stats" class="p-6 md:p-8 hidden space-y-6">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                 <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl">
@@ -220,21 +224,11 @@
         const samuiLat = 9.5120;
         const samuiLng = 100.0630;
 
-        // เริ่มต้นสร้างแผนที่
         function initMap() {
             map = L.map('map').setView([samuiLat, samuiLng], 12);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap'
-            }).addTo(map);
-
-            // ค่าเริ่มต้นพิกัดกลางเกาะสมุย
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
             setMarker(samuiLat, samuiLng);
-
-            // กดคลิกบนแผนที่เพื่อเปลี่ยนพิกัด
-            map.on('click', function(e) {
-                setMarker(e.latlng.lat, e.latlng.lng);
-            });
+            map.on('click', e => setMarker(e.latlng.lat, e.latlng.lng));
         }
 
         function setMarker(lat, lng) {
@@ -242,7 +236,7 @@
                 marker.setLatLng([lat, lng]);
             } else {
                 marker = L.marker([lat, lng], {draggable: true}).addTo(map);
-                marker.on('dragend', function(e) {
+                marker.on('dragend', e => {
                     const pos = marker.getLatLng();
                     updateLatLngInputs(pos.lat, pos.lng);
                 });
@@ -258,20 +252,15 @@
         function getGPSLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(p => {
-                    const lat = p.coords.latitude;
-                    const lng = p.coords.longitude;
-                    map.setView([lat, lng], 15);
-                    setMarker(lat, lng);
+                    map.setView([p.coords.latitude, p.coords.longitude], 15);
+                    setMarker(p.coords.latitude, p.coords.longitude);
                     alert('ดึงพิกัด GPS สำเร็จ!');
                 }, () => alert('ไม่สามารถดึงพิกัดได้'));
-            } else {
-                alert('เบราว์เซอร์ไม่รองรับ GPS');
-            }
+            } else { alert('เบราว์เซอร์ไม่รองรับ GPS'); }
         }
 
-        // สลับแท็บ
         function switchTab(tab) {
-            ['form', 'search', 'filter', 'stats'].forEach(t => {
+            ['form', 'manage', 'stats'].forEach(t => {
                 document.getElementById('section-' + t).classList.add('hidden');
                 document.getElementById('tab-' + t).className = "flex-1 py-3 text-center font-medium text-slate-600 hover:text-blue-600 transition border-b-2 border-transparent";
             });
@@ -279,6 +268,7 @@
             document.getElementById('tab-' + tab).className = "flex-1 py-3 text-center font-semibold text-blue-600 border-b-2 border-blue-600 bg-white transition";
 
             if(tab === 'form' && map) { setTimeout(() => map.invalidateSize(), 200); }
+            if(tab === 'manage') { loadFilteredData(); }
             if(tab === 'stats') loadStats();
         }
 
@@ -294,7 +284,6 @@
             initMap();
         };
 
-        // บันทึกฟอร์ม
         document.getElementById('repairForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
@@ -315,7 +304,7 @@
 
             fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(data) })
             .then(res => res.json())
-            .then(res => {
+            .then(() => {
                 alert('บันทึกข้อมูลสำเร็จ! รหัสอ้างอิง: ' + data.reportId);
                 this.reset();
                 generateReportId();
@@ -328,7 +317,6 @@
             });
         });
 
-        // ค้นหารายงาน
         function searchReport() {
             const id = document.getElementById('searchId').value.trim();
             if(!id) return alert('กรุณากรอกรหัสรายงาน');
@@ -344,7 +332,6 @@
                     document.getElementById('resDistrict').textContent = d.district;
                     document.getElementById('resLocation').textContent = d.locationDesc;
                     document.getElementById('resDamage').textContent = d.damageType;
-                    document.getElementById('resUpdateDate').textContent = d.updateDate || '-';
                     document.getElementById('updateStatus').value = d.status;
                     document.getElementById('updateNote').value = d.note || '';
                     document.getElementById('searchResult').classList.remove('hidden');
@@ -355,7 +342,6 @@
             });
         }
 
-        // อัปเดตสถานะ
         function updateStatus() {
             const data = {
                 action: 'update',
@@ -368,12 +354,11 @@
             .then(res => {
                 if(res.success) {
                     alert('อัปเดตสถานะเรียบร้อยแล้ว');
-                    document.getElementById('resUpdateDate').textContent = res.updateDate;
+                    loadFilteredData();
                 } else { alert('อัปเดตไม่สำเร็จ'); }
             });
         }
 
-        // กรองข้อมูลตามสถานะ/ตำบล
         function loadFilteredData() {
             const status = document.getElementById('filterStatus').value;
             const district = document.getElementById('filterDistrict').value;
@@ -389,12 +374,12 @@
                     }
                     res.data.forEach(item => {
                         tbody.innerHTML += `
-                            <tr class="border-b border-slate-100 hover:bg-slate-50">
-                                <td class="p-3 font-mono text-xs text-blue-600 font-bold">${item.reportId}</td>
-                                <td class="p-3 text-xs">${item.date}</td>
-                                <td class="p-3">${item.district}</td>
-                                <td class="p-3">${item.location}</td>
-                                <td class="p-3"><span class="px-2 py-1 rounded text-xs font-semibold ${item.status==='ดำเนินการแล้ว'?'bg-emerald-100 text-emerald-700':item.status==='อยู่ระหว่างดำเนินการ'?'bg-purple-100 text-purple-700':'bg-amber-100 text-amber-700'}">${item.status}</span></td>
+                            <tr class="border-b border-slate-100 hover:bg-slate-50 text-xs cursor-pointer" onclick="document.getElementById('searchId').value='${item.reportId}'; searchReport();">
+                                <td class="p-2.5 font-mono text-blue-600 font-bold">${item.reportId}</td>
+                                <td class="p-2.5">${item.date}</td>
+                                <td class="p-2.5">${item.district}</td>
+                                <td class="p-2.5">${item.location}</td>
+                                <td class="p-2.5"><span class="px-2 py-0.5 rounded font-semibold ${item.status==='ดำเนินการแล้ว'?'bg-emerald-100 text-emerald-700':item.status==='อยู่ระหว่างดำเนินการ'?'bg-purple-100 text-purple-700':'bg-amber-100 text-amber-700'}">${item.status}</span></td>
                             </tr>
                         `;
                     });
@@ -402,7 +387,6 @@
             });
         }
 
-        // โหลดสถิติ
         function loadStats() {
             fetch(`${WEB_APP_URL}?action=stats`)
             .then(res => res.json())
