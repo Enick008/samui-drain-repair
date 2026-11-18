@@ -6,7 +6,6 @@
     <title>ระบบแจ้งซ่อมฝาท่อระบายน้ำ - เทศบาลนครเกาะสมุย</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Leaflet CSS สำหรับแผนที่ -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body { font-family: 'Sarabun', sans-serif; }
@@ -21,14 +20,13 @@
             <p class="text-blue-100 text-sm mt-1">เทศบาลนครเกาะสมุย</p>
         </div>
 
-        <!-- Navigation Tabs (เหลือ 3 แท็บหลักที่กระชับขึ้น) -->
         <div class="flex border-b border-slate-200 bg-slate-50 flex-wrap">
             <button onclick="switchTab('form')" id="tab-form" class="flex-1 py-3 text-center font-semibold text-blue-600 border-b-2 border-blue-600 bg-white transition">📝 แจ้งซ่อมใหม่</button>
             <button onclick="switchTab('manage')" id="tab-manage" class="flex-1 py-3 text-center font-medium text-slate-600 hover:text-blue-600 transition">🔍 ค้นหา / กรอง / จัดการ</button>
             <button onclick="switchTab('stats')" id="tab-stats" class="flex-1 py-3 text-center font-medium text-slate-600 hover:text-blue-600 transition">📊 สถิติภาพรวม</button>
         </div>
 
-        <!-- Tab 1: ฟอร์มแจ้งซ่อม + เลือกพิกัดบนแผนที่ -->
+        <!-- Tab 1: แจ้งซ่อม -->
         <div id="section-form" class="p-6 md:p-8">
             <form id="repairForm" class="space-y-5">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -76,10 +74,9 @@
                     <input type="text" id="locationDesc" required placeholder="เช่น หน้าเซเว่น ถนนสายบางรักษ์" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 </div>
 
-                <!-- ส่วนเลือกพิกัดแผนที่ -->
                 <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-3">
                     <div class="flex justify-between items-center flex-wrap gap-2">
-                        <span class="text-sm font-semibold text-slate-700">📍 เลือกพิกัดจุดเกิดเหตุจากแผนที่ (คลิกเลือกบนแผนที่ หรือกดปุ่ม GPS)</span>
+                        <span class="text-sm font-semibold text-slate-700">📍 เลือกพิกัดจุดเกิดเหตุจากแผนที่</span>
                         <button type="button" onclick="getGPSLocation()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg transition font-medium">🎯 ใช้ตำแหน่งปัจจุบัน</button>
                     </div>
                     <div id="map"></div>
@@ -106,17 +103,15 @@
             </form>
         </div>
 
-        <!-- Tab 2: ค้นหา / กรอง / จัดการสถานะ (รวมกันในหน้าเดียว) -->
+        <!-- Tab 2: ค้นหา / กรอง / จัดการสถานะ -->
         <div id="section-manage" class="p-6 md:p-8 hidden space-y-6">
-            <!-- ส่วนที่ 1: ค้นหาด้วยรหัสรายงาน -->
             <div class="bg-blue-50/50 border border-blue-100 p-4 rounded-xl space-y-3">
-                <label class="block text-sm font-semibold text-blue-900">🔍 ค้นหาแบบระบุรหัสรายงาน (เพื่อแก้ไขสถานะ)</label>
+                <label class="block text-sm font-semibold text-blue-900">🔍 ค้นหาด้วยรหัสรายงาน (เพื่ออัปเดตสถานะ)</label>
                 <div class="flex gap-2">
                     <input type="text" id="searchId" placeholder="กรอกรหัสรายงาน เช่น R20261118-..." class="flex-1 border border-slate-300 rounded-lg px-4 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     <button onclick="searchReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium">ค้นหา</button>
                 </div>
 
-                <!-- ผลการค้นหาและฟอร์มแก้ไขสถานะ -->
                 <div id="searchResult" class="hidden bg-white border border-slate-200 rounded-xl p-4 space-y-3 mt-3">
                     <h4 class="font-bold text-slate-700 border-b pb-2">เคส: <span id="resReportId" class="text-blue-600 font-mono"></span></h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-slate-600">
@@ -131,13 +126,14 @@
                                 <label class="block text-xs text-slate-500 mb-1">สถานะ</label>
                                 <select id="updateStatus" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white">
                                     <option value="รอดำเนินการ">รอดำเนินการ</option>
+                                    <option value="สำรวจแล้ว">สำรวจแล้ว</option>
                                     <option value="อยู่ระหว่างดำเนินการ">อยู่ระหว่างดำเนินการ</option>
                                     <option value="ดำเนินการแล้ว">ดำเนินการแล้ว</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-xs text-slate-500 mb-1">หมายเหตุเพิ่มเติม</label>
-                                <input type="text" id="updateNote" placeholder="ระบุหมายเหตุ" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white">
+                                <input type="text" id="updateNote" placeholder="ระบุหมายเหตุการสำรวจ/ซ่อม" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white">
                             </div>
                         </div>
                         <button onclick="updateStatus()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg text-sm font-medium transition">💾 บันทึกการเปลี่ยนแปลงสถานะ</button>
@@ -145,13 +141,13 @@
                 </div>
             </div>
 
-            <!-- ส่วนที่ 2: กรองภาพรวมตามสถานะและตำบล -->
             <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-3">
                 <label class="block text-sm font-semibold text-slate-700">📋 กรองรายการทั้งหมด (ตามสถานะ หรือ ตำบล)</label>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <select id="filterStatus" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
                         <option value="ทั้งหมด">สถานะ: ทั้งหมด</option>
                         <option value="รอดำเนินการ">รอดำเนินการ</option>
+                        <option value="สำรวจแล้ว">สำรวจแล้ว</option>
                         <option value="อยู่ระหว่างดำเนินการ">อยู่ระหว่างดำเนินการ</option>
                         <option value="ดำเนินการแล้ว">ดำเนินการแล้ว</option>
                     </select>
@@ -189,22 +185,26 @@
 
         <!-- Tab 3: สถิติ -->
         <div id="section-stats" class="p-6 md:p-8 hidden space-y-6">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
+                <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl">
                     <p class="text-xs text-blue-600 font-medium">เคสทั้งหมด</p>
-                    <p id="statTotal" class="text-2xl font-bold text-blue-700 mt-1">0</p>
+                    <p id="statTotal" class="text-xl font-bold text-blue-700 mt-1">0</p>
                 </div>
-                <div class="bg-amber-50 border border-amber-100 p-4 rounded-xl">
+                <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl">
                     <p class="text-xs text-amber-600 font-medium">รอดำเนินการ</p>
-                    <p id="statPending" class="text-2xl font-bold text-amber-700 mt-1">0</p>
+                    <p id="statPending" class="text-xl font-bold text-amber-700 mt-1">0</p>
                 </div>
-                <div class="bg-purple-50 border border-purple-100 p-4 rounded-xl">
+                <div class="bg-teal-50 border border-teal-100 p-3 rounded-xl">
+                    <p class="text-xs text-teal-600 font-medium">สำรวจแล้ว</p>
+                    <p id="statSurveyed" class="text-xl font-bold text-teal-700 mt-1">0</p>
+                </div>
+                <div class="bg-purple-50 border border-purple-100 p-3 rounded-xl">
                     <p class="text-xs text-purple-600 font-medium">กำลังดำเนินการ</p>
-                    <p id="statInProgress" class="text-2xl font-bold text-purple-700 mt-1">0</p>
+                    <p id="statInProgress" class="text-xl font-bold text-purple-700 mt-1">0</p>
                 </div>
-                <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl">
+                <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-xl col-span-2 md:col-span-1">
                     <p class="text-xs text-emerald-600 font-medium">เสร็จสิ้นแล้ว</p>
-                    <p id="statCompleted" class="text-2xl font-bold text-emerald-700 mt-1">0</p>
+                    <p id="statCompleted" class="text-xl font-bold text-emerald-700 mt-1">0</p>
                 </div>
             </div>
             <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl text-center space-y-2">
@@ -215,10 +215,9 @@
 
     </div>
 
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        const WEB_APP_URL = "ลิงก์_Web_App_URL_ของ_Apps_Script_คุณเอ็น"; // ⚠️ แทนที่ด้วย URL ของคุณเอ็น
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxFTGt_D8pve1NMvYx5Vj-47Er1OnJGfD4aXg3nkwoamBhCsYETAlpttdun2nXTpk_X/exec"; // ลิงก์ Web App ของคุณเอ็น
 
         let map, marker;
         const samuiLat = 9.5120;
@@ -373,13 +372,18 @@
                         return;
                     }
                     res.data.forEach(item => {
+                        let badgeColor = 'bg-amber-100 text-amber-700';
+                        if(item.status === 'สำรวจแล้ว') badgeColor = 'bg-teal-100 text-teal-700';
+                        else if(item.status === 'อยู่ระหว่างดำเนินการ') badgeColor = 'bg-purple-100 text-purple-700';
+                        else if(item.status === 'ดำเนินการแล้ว') badgeColor = 'bg-emerald-100 text-emerald-700';
+
                         tbody.innerHTML += `
                             <tr class="border-b border-slate-100 hover:bg-slate-50 text-xs cursor-pointer" onclick="document.getElementById('searchId').value='${item.reportId}'; searchReport();">
                                 <td class="p-2.5 font-mono text-blue-600 font-bold">${item.reportId}</td>
                                 <td class="p-2.5">${item.date}</td>
                                 <td class="p-2.5">${item.district}</td>
                                 <td class="p-2.5">${item.location}</td>
-                                <td class="p-2.5"><span class="px-2 py-0.5 rounded font-semibold ${item.status==='ดำเนินการแล้ว'?'bg-emerald-100 text-emerald-700':item.status==='อยู่ระหว่างดำเนินการ'?'bg-purple-100 text-purple-700':'bg-amber-100 text-amber-700'}">${item.status}</span></td>
+                                <td class="p-2.5"><span class="px-2 py-0.5 rounded font-semibold ${badgeColor}">${item.status}</span></td>
                             </tr>
                         `;
                     });
@@ -395,6 +399,7 @@
                     const s = res.stats;
                     document.getElementById('statTotal').textContent = s.total;
                     document.getElementById('statPending').textContent = s.pending;
+                    document.getElementById('statSurveyed').textContent = s.surveyed;
                     document.getElementById('statInProgress').textContent = s.inProgress;
                     document.getElementById('statCompleted').textContent = s.completed;
                     document.getElementById('statAvgDays').textContent = s.avgDays;
