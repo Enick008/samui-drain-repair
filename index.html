@@ -35,8 +35,7 @@
                         <input type="text" id="reportId" readonly class="w-full bg-slate-100 border border-slate-300 rounded-lg px-4 py-2 text-slate-600 font-mono text-sm cursor-not-allowed">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">วันที่และเวลาแจ้ง (สามารถเปลี่ยนได้)</label>
-                        <!-- เปลี่ยนเป็น input type="datetime-local" เพื่อให้เลือกวันที่ย้อนหลังหรือเวลาอื่นได้ -->
+                        <label class="block text-sm font-medium text-slate-700 mb-1">วันที่และเวลาแจ้ง</label>
                         <input type="datetime-local" id="reportDate" required class="w-full border border-slate-300 rounded-lg px-4 py-2 text-slate-700 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
                     </div>
                     <div>
@@ -126,8 +125,8 @@
                             <div>
                                 <label class="block text-xs text-slate-500 mb-1">สถานะ</label>
                                 <select id="updateStatus" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white">
-                                    <option value="รอดำเนินการ">รับแจ้งรอสำรวจ</option>
-                                    <option value="สำรวจแล้ว">สำรวจแล้วอยู่ระหว่างดำเนินการ</option>
+                                    <option value="รับแจ้งรอสำรวจ">รับแจ้งรอสำรวจ</option>
+                                    <option value="สำรวจแล้วอยู่ระหว่างดำเนินการ">สำรวจแล้วอยู่ระหว่างดำเนินการ</option>
                                     <option value="ดำเนินการแล้ว">ดำเนินการแล้ว</option>
                                 </select>
                             </div>
@@ -146,8 +145,8 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <select id="filterStatus" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
                         <option value="ทั้งหมด">สถานะ: ทั้งหมด</option>
-                        <option value="รอดำเนินการ">รับแจ้งรอสำรวจ</option>
-                        <option value="สำรวจแล้ว">สำรวจแล้วอยู่ระหว่างดำเนินการ</option>
+                        <option value="รับแจ้งรอสำรวจ">รับแจ้งรอสำรวจ</option>
+                        <option value="สำรวจแล้วอยู่ระหว่างดำเนินการ">สำรวจแล้วอยู่ระหว่างดำเนินการ</option>
                         <option value="ดำเนินการแล้ว">ดำเนินการแล้ว</option>
                     </select>
                     <select id="filterDistrict" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
@@ -184,26 +183,22 @@
 
         <!-- Tab 3: สถิติ -->
         <div id="section-stats" class="p-6 md:p-8 hidden space-y-6">
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
-                <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-center">
+                <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl">
                     <p class="text-xs text-blue-600 font-medium">เคสทั้งหมด</p>
-                    <p id="statTotal" class="text-xl font-bold text-blue-700 mt-1">0</p>
+                    <p id="statTotal" class="text-2xl font-bold text-blue-700 mt-1">0</p>
                 </div>
-                <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl">
-                    <p class="text-xs text-amber-600 font-medium">รอดำเนินการ</p>
-                    <p id="statPending" class="text-xl font-bold text-amber-700 mt-1">0</p>
+                <div class="bg-amber-50 border border-amber-100 p-4 rounded-xl">
+                    <p class="text-xs text-amber-600 font-medium">รับแจ้งรอสำรวจ</p>
+                    <p id="statPending" class="text-2xl font-bold text-amber-700 mt-1">0</p>
                 </div>
-                <div class="bg-teal-50 border border-teal-100 p-3 rounded-xl">
-                    <p class="text-xs text-teal-600 font-medium">สำรวจแล้ว</p>
-                    <p id="statSurveyed" class="text-xl font-bold text-teal-700 mt-1">0</p>
+                <div class="bg-purple-50 border border-purple-100 p-4 rounded-xl">
+                    <p class="text-xs text-purple-600 font-medium">สำรวจแล้วอยู่ระหว่างดำเนินการ</p>
+                    <p id="statSurveyed" class="text-2xl font-bold text-purple-700 mt-1">0</p>
                 </div>
-                <div class="bg-purple-50 border border-purple-100 p-3 rounded-xl">
-                    <p class="text-xs text-purple-600 font-medium">กำลังดำเนินการ</p>
-                    <p id="statInProgress" class="text-xl font-bold text-purple-700 mt-1">0</p>
-                </div>
-                <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-xl col-span-2 md:col-span-1">
-                    <p class="text-xs text-emerald-600 font-medium">เสร็จสิ้นแล้ว</p>
-                    <p id="statCompleted" class="text-xl font-bold text-emerald-700 mt-1">0</p>
+                <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl">
+                    <p class="text-xs text-emerald-600 font-medium">ดำเนินการแล้ว</p>
+                    <p id="statCompleted" class="text-2xl font-bold text-emerald-700 mt-1">0</p>
                 </div>
             </div>
             <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl text-center space-y-2">
@@ -275,7 +270,6 @@
             const id = `R${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
             document.getElementById('reportId').value = id;
             
-            // ตั้งค่าเริ่มต้นช่อง datetime-local เป็นเวลาปัจจุบัน (Format: YYYY-MM-DDTHH:mm)
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const day = String(now.getDate()).padStart(2, '0');
@@ -294,7 +288,6 @@
             const btn = document.getElementById('submitBtn');
             btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
 
-            // จัดรูปแบบวันที่เลือกให้อยู่ในรูป DD/MM/YYYY HH:mm:ss
             const rawDate = document.getElementById('reportDate').value;
             let formattedDateStr = rawDate;
             if (rawDate) {
@@ -392,8 +385,7 @@
                     }
                     res.data.forEach(item => {
                         let badgeColor = 'bg-amber-100 text-amber-700';
-                        if(item.status === 'สำรวจแล้ว') badgeColor = 'bg-teal-100 text-teal-700';
-                        else if(item.status === 'อยู่ระหว่างดำเนินการ') badgeColor = 'bg-purple-100 text-purple-700';
+                        if(item.status === 'สำรวจแล้วอยู่ระหว่างดำเนินการ') badgeColor = 'bg-purple-100 text-purple-700';
                         else if(item.status === 'ดำเนินการแล้ว') badgeColor = 'bg-emerald-100 text-emerald-700';
 
                         tbody.innerHTML += `
@@ -419,7 +411,6 @@
                     document.getElementById('statTotal').textContent = s.total;
                     document.getElementById('statPending').textContent = s.pending;
                     document.getElementById('statSurveyed').textContent = s.surveyed;
-                    document.getElementById('statInProgress').textContent = s.inProgress;
                     document.getElementById('statCompleted').textContent = s.completed;
                     document.getElementById('statAvgDays').textContent = s.avgDays;
                 }
