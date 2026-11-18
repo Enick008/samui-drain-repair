@@ -74,10 +74,10 @@
                     <input type="text" id="locationDesc" required placeholder="เช่น หน้าเซเว่น ถนนสายบางรักษ์" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 </div>
 
-                <!-- ส่วนเลือกพิกัดแผนที่ (เพิ่มช่องพิมพ์เองได้) -->
+                <!-- ส่วนเลือกพิกัดแผนที่ (รองรับแผนที่ดาวเทียม) -->
                 <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-3">
                     <div class="flex justify-between items-center flex-wrap gap-2">
-                        <span class="text-sm font-semibold text-slate-700">📍 กำหนดพิกัดจุดเกิดเหตุ (คลิกบนแผนที่, กด GPS หรือพิมพ์กรอกเอง)</span>
+                        <span class="text-sm font-semibold text-slate-700">📍 กำหนดพิกัด (คลิกแผนที่, GPS หรือกรอกเอง)</span>
                         <button type="button" onclick="getGPSLocation()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg transition font-medium">🎯 ใช้ตำแหน่งปัจจุบัน</button>
                     </div>
                     <div id="map"></div>
@@ -212,15 +212,36 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxFTGt_D8pve1NMvYx5Vj-47Er1OnJGfD4aXg3nkwoamBhCsYETAlpttdun2nXTpk_X/exec"; // ลิงก์ Web App ของคุณเอ็น
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxFTGt_D8pve1NMvYx5Vj-47Er1OnJGfD4aXg3nkwoamBhCsYETAlpttdun2nXTpk_X/exec";
 
         let map, marker;
         const samuiLat = 9.5120;
         const samuiLng = 100.0630;
 
         function initMap() {
-            map = L.map('map').setView([samuiLat, samuiLng], 12);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+            // สร้างเลเยอร์แผนที่ (ถนนปกติ และ ดาวเทียม)
+            const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' });
+            
+            // ใช้ ESRI World Imagery สำหรับภาพถ่ายดาวเทียมความละเอียดสูง (ฟรีและไม่ต้องใช้ API Key)
+            const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                maxZoom: 19,
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-epades, and the GIS User Community'
+            });
+
+            // ตั้งค่าเริ่มต้นให้ใช้แผนที่ดาวเทียมเป็นค่าหลัก (หรือจะสลับเป็นถนนปกติก็ได้)
+            map = L.map('map', {
+                center: [samuiLat, samuiLng],
+                zoom: 12,
+                layers: [satelliteLayer] // เริ่มต้นด้วยดาวเทียม
+            });
+
+            // ปุ่มสลับเลเยอร์แผนที่ (Layer Control)
+            const baseLayers = {
+                "🛰️ ภาพถ่ายดาวเทียม": satelliteLayer,
+                "🗺️ แผนที่ถนนปกติ": streetLayer
+            };
+            L.control.layers(baseLayers).addTo(map);
+
             setMarker(samuiLat, samuiLng);
             map.on('click', e => setMarker(e.latlng.lat, e.latlng.lng));
         }
@@ -243,7 +264,6 @@
             document.getElementById('longitude').value = lng.toFixed(6);
         }
 
-        // ฟังก์ชันเมื่อผู้ใช้พิมพ์กรอกพิกัดเองในช่อง input
         function onManualLatLngChange() {
             const lat = parseFloat(document.getElementById('latitude').value);
             const lng = parseFloat(document.getElementById('longitude').value);
@@ -260,7 +280,7 @@
         function getGPSLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(p => {
-                    map.setView([p.coords.latitude, p.coords.longitude], 15);
+                    map.setView([p.coords.latitude, p.coords.longitude], 17);
                     setMarker(p.coords.latitude, p.coords.longitude);
                     alert('ดึงพิกัด GPS สำเร็จ!');
                 }, () => alert('ไม่สามารถดึงพิกัดได้'));
