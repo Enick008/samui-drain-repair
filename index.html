@@ -4,169 +4,212 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบแจ้งซ่อมฝาท่อระบายน้ำ - เทศบาลนครเกาะสมุย</title>
-    <!-- Tailwind CSS สำหรับดีไซน์ที่สวยงาม ทันสมัย -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Sarabun', sans-serif; }
-    </style>
+    <style>body { font-family: 'Sarabun', sans-serif; }</style>
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen py-8 px-4">
 
-    <div class="max-w-2xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
-        <!-- Header ส่วนหัวระบบ -->
+    <div class="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
+        <!-- Header -->
         <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-6 text-center">
-            <h1 class="text-2xl font-bold">ระบบแจ้งซ่อมฝาท่อระบายน้ำ</h1>
+            <h1 class="text-2xl font-bold">ระบบจัดการและแจ้งซ่อมฝาท่อระบายน้ำ</h1>
             <p class="text-blue-100 text-sm mt-1">เทศบาลนครเกาะสมุย</p>
         </div>
 
-        <!-- ฟอร์มแจ้งซ่อม -->
-        <form id="repairForm" class="p-6 md:p-8 space-y-5">
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- รหัสรายงาน (Auto Generate) -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">รหัสรายงาน (ใช้อ้างอิง)</label>
-                    <input type="text" id="reportId" readonly class="w-full bg-slate-100 border border-slate-300 rounded-lg px-4 py-2 text-slate-600 font-mono text-sm cursor-not-allowed">
-                </div>
+        <!-- Navigation Tabs -->
+        <div class="flex border-b border-slate-200 bg-slate-50">
+            <button onclick="switchTab('form')" id="tab-form" class="flex-1 py-3 text-center font-semibold text-blue-600 border-b-2 border-blue-600 bg-white transition">📝 แจ้งซ่อมใหม่</button>
+            <button onclick="switchTab('search')" id="tab-search" class="flex-1 py-3 text-center font-medium text-slate-600 hover:text-blue-600 transition">🔍 ค้นหา / แก้ไขสถานะ</button>
+            <button onclick="switchTab('stats')" id="tab-stats" class="flex-1 py-3 text-center font-medium text-slate-600 hover:text-blue-600 transition">📊 หน้าสถิติภาพรวม</button>
+        </div>
 
-                <!-- วันที่และเวลาแจ้ง -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">วันที่และเวลาแจ้ง</label>
-                    <input type="text" id="reportDate" readonly class="w-full bg-slate-100 border border-slate-300 rounded-lg px-4 py-2 text-slate-600 text-sm cursor-not-allowed">
-                </div>
-
-                <!-- ชื่อผู้แจ้ง -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">ชื่อผู้แจ้ง / หน่วยงาน <span class="text-red-500">*</span></label>
-                    <input type="text" id="informant" required value="เทศบาลนครเกาะสมุย" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                </div>
-
-                <!-- เบอร์โทร -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">เบอร์โทรศัพท์ติดต่อ <span class="text-red-500">*</span></label>
-                    <input type="tel" id="phone" required value="077421421" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                </div>
-
-                <!-- ตำบล -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">ตำบล <span class="text-red-500">*</span></label>
-                    <select id="district" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <option value="บ่อผุด">บ่อผุด</option>
-                        <option value="อ่างทอง">อ่างทอง</option>
-                        <option value="แม่น้ำ">แม่น้ำ</option>
-                        <option value="มะเร็ต">มะเร็ต</option>
-                        <option value="ลิปะน้อย">ลิปะน้อย</option>
-                        <option value="ตลิ่งงาม">ตลิ่งงาม</option>
-                        <option value="หน้าเมือง">หน้าเมือง</option>
-                    </select>
-                </div>
-
-                <!-- ลักษณะการชำรุด -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">ลักษณะการชำรุด <span class="text-red-500">*</span></label>
-                    <select id="damageType" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <option value="ฝาชำรุด">ฝาชำรุด</option>
-                        <option value="ฝาหาย">ฝาหาย</option>
-                        <option value="ส่งเสียงดังรบกวน">ส่งเสียงดังรบกวน</option>
-                        <option value="อื่นๆ">อื่นๆ</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- ตำแหน่ง / จุดสังเกต -->
-            <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">ตำแหน่ง / จุดสังเกต (ถนน, ซอย, สถานที่ใกล้เคียง) <span class="text-red-500">*</span></label>
-                <input type="text" id="locationDesc" required placeholder="เช่น หน้าเซเว่น ถนนสายบางรักษ์-บ่อนไก่" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            </div>
-
-            <!-- ส่วนพิกัด GPS -->
-            <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-3">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                    <span class="text-sm font-semibold text-slate-700">พิกัดจุดเกิดเหตุ (GPS Coordinates)</span>
-                    <button type="button" onclick="getLocation()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg transition flex items-center gap-1 shadow-sm font-medium">
-                        📍 ดึงพิกัดปัจจุบันอัตโนมัติ
-                    </button>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- Tab 1: ฟอร์มแจ้งซ่อม -->
+        <div id="section-form" class="p-6 md:p-8">
+            <form id="repairForm" class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs text-slate-500 mb-1">ละติจูด (Latitude)</label>
-                        <input type="text" id="latitude" placeholder="9.5120..." class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">รหัสรายงาน (อ้างอิง)</label>
+                        <input type="text" id="reportId" readonly class="w-full bg-slate-100 border border-slate-300 rounded-lg px-4 py-2 text-slate-600 font-mono text-sm cursor-not-allowed">
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-500 mb-1">ลองจิจูด (Longitude)</label>
-                        <input type="text" id="longitude" placeholder="100.0630..." class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">วันที่และเวลาแจ้ง</label>
+                        <input type="text" id="reportDate" readonly class="w-full bg-slate-100 border border-slate-300 rounded-lg px-4 py-2 text-slate-600 text-sm cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">ชื่อผู้แจ้ง / หน่วยงาน</label>
+                        <input type="text" id="informant" required value="เทศบาลนครเกาะสมุย" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">เบอร์โทรศัพท์ติดต่อ</label>
+                        <input type="tel" id="phone" required value="077421421" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">ตำบล</label>
+                        <select id="district" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="บ่อผุด">บ่อผุด</option>
+                            <option value="อ่างทอง">อ่างทอง</option>
+                            <option value="แม่น้ำ">แม่น้ำ</option>
+                            <option value="มะเร็ต">มะเร็ต</option>
+                            <option value="ลิปะน้อย">ลิปะน้อย</option>
+                            <option value="ตลิ่งงาม">ตลิ่งงาม</option>
+                            <option value="หน้าเมือง">หน้าเมือง</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">ลักษณะการชำรุด</label>
+                        <select id="damageType" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="ฝาชำรุด">ฝาชำรุด</option>
+                            <option value="ฝาหาย">ฝาหาย</option>
+                            <option value="ส่งเสียงดังรบกวน">ส่งเสียงดังรบกวน</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
+                        </select>
                     </div>
                 </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">ตำแหน่ง / จุดสังเกต (ถนน, ซอย, สถานที่ใกล้เคียง)</label>
+                    <input type="text" id="locationDesc" required placeholder="เช่น หน้าเซเว่น ถนนสายบางรักษ์" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-semibold text-slate-700">พิกัดจุดเกิดเหตุ (GPS)</span>
+                        <button type="button" onclick="getLocation()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg transition font-medium">📍 ดึงพิกัดปัจจุบัน</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" id="latitude" placeholder="Latitude" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm">
+                        <input type="text" id="longitude" placeholder="Longitude" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">รายละเอียดเพิ่มเติม / หมายเหตุ</label>
+                    <textarea id="note" rows="2" placeholder="เช่น จำนวนฝาที่ชำรุด" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex justify-end">
+                    <button type="submit" id="submitBtn" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition text-sm">บันทึกข้อมูลแจ้งซ่อม</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tab 2: ค้นหาและแก้ไขสถานะ -->
+        <div id="section-search" class="p-6 md:p-8 hidden space-y-6">
+            <div class="flex gap-2">
+                <input type="text" id="searchId" placeholder="กรอกรหัสรายงาน เช่น R20261118-..." class="flex-1 border border-slate-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <button onclick="searchReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium">🔍 ค้นหา</button>
             </div>
 
-            <!-- รายละเอียดเพิ่มเติม -->
-            <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">รายละเอียดเพิ่มเติม / หมายเหตุ</label>
-                <textarea id="note" rows="2" placeholder="เช่น จำนวนฝาที่ชำรุด หรือข้อมูลสำรวจเพิ่มเติม" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
-            </div>
+            <div id="searchResult" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-4">
+                <h3 class="font-bold text-slate-700 border-b pb-2">รายละเอียดเคส: <span id="resReportId" class="text-blue-600 font-mono"></span></h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-slate-600">
+                    <p><strong>วันที่แจ้ง:</strong> <span id="resDate"></span></p>
+                    <p><strong>ผู้แจ้ง:</strong> <span id="resInformant"></span> (<span id="resPhone"></span>)</p>
+                    <p><strong>ตำบล:</strong> <span id="resDistrict"></span></p>
+                    <p><strong>ตำแหน่ง:</strong> <span id="resLocation"></span></p>
+                    <p><strong>ลักษณะ:</strong> <span id="resDamage"></span></p>
+                    <p><strong>อัปเดตล่าสุด:</strong> <span id="resUpdateDate"></span></p>
+                </div>
 
-            <!-- ปุ่มกดส่งข้อมูล -->
-            <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
-                <button type="reset" class="px-5 py-2.5 border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-50 transition text-sm">ล้างฟอร์ม</button>
-                <button type="submit" id="submitBtn" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition text-sm flex items-center gap-2">
-                    <span>บันทึกข้อมูลแจ้งซ่อม</span>
-                </button>
+                <!-- ฟอร์มแก้ไขสถานะ -->
+                <div class="pt-4 border-t border-slate-200 space-y-3">
+                    <h4 class="font-semibold text-sm text-slate-700">อัปเดตสถานะการดำเนินการ</h4>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1">สถานะ</label>
+                        <select id="updateStatus" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                            <option value="รอดำเนินการ">รอดำเนินการ</option>
+                            <option value="อยู่ระหว่างดำเนินการ">อยู่ระหว่างดำเนินการ</option>
+                            <option value="ดำเนินการแล้ว">ดำเนินการแล้ว</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1">หมายเหตุเพิ่มเติม (เช่น เสร็จสิ้นเมื่อ...)</label>
+                        <input type="text" id="updateNote" placeholder="ระบุหมายเหตุการซ่อม" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                    </div>
+                    <button onclick="updateStatus()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition">💾 บันทึกการเปลี่ยนแปลงสถานะ</button>
+                </div>
             </div>
-        </form>
+        </div>
+
+        <!-- Tab 3: หน้าสถิติ -->
+        <div id="section-stats" class="p-6 md:p-8 hidden space-y-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl">
+                    <p class="text-xs text-blue-600 font-medium">เคสทั้งหมด</p>
+                    <p id="statTotal" class="text-2xl font-bold text-blue-700 mt-1">0</p>
+                </div>
+                <div class="bg-amber-50 border border-amber-100 p-4 rounded-xl">
+                    <p class="text-xs text-amber-600 font-medium">รอดำเนินการ</p>
+                    <p id="statPending" class="text-2xl font-bold text-amber-700 mt-1">0</p>
+                </div>
+                <div class="bg-purple-50 border border-purple-100 p-4 rounded-xl">
+                    <p class="text-xs text-purple-600 font-medium">กำลังดำเนินการ</p>
+                    <p id="statInProgress" class="text-2xl font-bold text-purple-700 mt-1">0</p>
+                </div>
+                <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl">
+                    <p class="text-xs text-emerald-600 font-medium">เสร็จสิ้นแล้ว</p>
+                    <p id="statCompleted" class="text-2xl font-bold text-emerald-700 mt-1">0</p>
+                </div>
+            </div>
+            <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl text-center space-y-2">
+                <p class="text-sm font-semibold text-slate-700">⏱️ ระยะเวลาเฉลี่ยในการซ่อมแซมเสร็จสิ้น</p>
+                <p class="text-3xl font-bold text-indigo-600"><span id="statAvgDays">0</span> <span class="text-base font-normal text-slate-500">วัน</span></p>
+            </div>
+            <div class="text-center">
+                <button onclick="loadStats()" class="bg-slate-600 hover:bg-slate-700 text-white text-xs px-4 py-2 rounded-lg transition">🔄 รีเฟรชข้อมูลสถิติ</button>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Script สำหรับทำงานและเชื่อมต่อ Web App -->
     <script>
-        // กำหนด Web App URL ของคุณเอ็นตรงนี้
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxFTGt_D8pve1NMvYx5Vj-47Er1OnJGfD4aXg3nkwoamBhCsYETAlpttdun2nXTpk_X/exec";
+        const WEB_APP_URL = "ลิงก์_Web_App_URL_ของ_Apps_Script_คุณเอ็น"; // ⚠️ แทนที่ด้วย URL ของคุณเอ็น
 
-        // สร้างรหัสรายงานอัตโนมัติ (Format: RYYYYMMDD-HHMMSS) และใส่วันที่ปัจจุบัน
-        function generateReportId() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
+        // สลับแท็บหน้าจอ
+        function switchTab(tab) {
+            document.getElementById('section-form').classList.add('hidden');
+            document.getElementById('section-search').classList.add('hidden');
+            document.getElementById('section-stats').classList.add('hidden');
             
-            const reportId = `R${year}${month}${day}-${hours}${minutes}${seconds}`;
-            document.getElementById('reportId').value = reportId;
+            document.getElementById('tab-form').className = "flex-1 py-3 text-center font-medium text-slate-600 hover:text-blue-600 transition border-b-2 border-transparent";
+            document.getElementById('tab-search').className = "flex-1 py-3 text-center font-medium text-slate-600 hover:text-blue-600 transition border-b-2 border-transparent";
+            document.getElementById('tab-stats').className = "flex-1 py-3 text-center font-medium text-slate-600 hover:text-blue-600 transition border-b-2 border-transparent";
 
-            const dateStr = `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
-            document.getElementById('reportDate').value = dateStr;
+            document.getElementById('section-' + tab).classList.remove('hidden');
+            document.getElementById('tab-' + tab).className = "flex-1 py-3 text-center font-semibold text-blue-600 border-b-2 border-blue-600 bg-white transition";
+
+            if(tab === 'stats') loadStats();
         }
 
+        // สร้างรหัสรายงานอัตโนมัติ
+        function generateReportId() {
+            const now = new Date();
+            const id = `R${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
+            document.getElementById('reportId').value = id;
+            document.getElementById('reportDate').value = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}, ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+        }
         window.onload = generateReportId;
 
-        // ฟังก์ชันดึงพิกัด GPS ปัจจุบัน
         function getLocation() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        document.getElementById('latitude').value = position.coords.latitude;
-                        document.getElementById('longitude').value = position.coords.longitude;
-                        alert('ดึงพิกัด GPS สำเร็จ!');
-                    },
-                    (error) => {
-                        alert('ไม่สามารถดึงพิกัดได้: กรุณาอนุญาตการเข้าถึงตำแหน่ง GPS บนเบราว์เซอร์');
-                    }
-                );
+                navigator.geolocation.getCurrentPosition(p => {
+                    document.getElementById('latitude').value = p.coords.latitude;
+                    document.getElementById('longitude').value = p.coords.longitude;
+                    alert('ดึงพิกัดสำเร็จ!');
+                }, () => alert('ไม่สามารถดึงพิกัดได้'));
             } else {
-                alert('เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง GPS');
+                alert('เบราว์เซอร์ไม่รองรับ GPS');
             }
         }
 
-        // จัดการการส่งข้อมูลฟอร์มยิงเข้า Apps Script (Web App)
+        // บันทึกฟอร์มใหม่
         document.getElementById('repairForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
 
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `<span>กำลังบันทึกข้อมูล...</span>`;
-
-            const formData = {
+            const data = {
                 reportId: document.getElementById('reportId').value,
                 reportDate: document.getElementById('reportDate').value,
                 informant: document.getElementById('informant').value,
@@ -179,30 +222,90 @@
                 note: document.getElementById('note').value
             };
 
-            // ส่งข้อมูลด้วย fetch API แบบ POST (No-cors หรือรับ JSON ผ่าน Apps Script)
             fetch(WEB_APP_URL, {
                 method: 'POST',
-                mode: 'no-cors', // ป้องกันปัญหา CORS บน Browser
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(data)
             })
-            .then(() => {
-                alert(`บันทึกข้อมูลแจ้งซ่อมสำเร็จ!\nรหัสอ้างอิง: ${formData.reportId}`);
+            .then(res => res.json())
+            .then(res => {
+                alert('บันทึกข้อมูลสำเร็จ! รหัสอ้างอิง: ' + data.reportId);
                 this.reset();
-                generateReportId(); // สร้างรหัสใหม่สำหรับรายการถัดไป
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `<span>บันทึกข้อมูลแจ้งซ่อม</span>`;
+                generateReportId();
+                btn.disabled = false; btn.textContent = 'บันทึกข้อมูลแจ้งซ่อม';
             })
-            .catch((error) => {
-                console.error('Error:', error);
-                alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `<span>บันทึกข้อมูลแจ้งซ่อม</span>`;
+            .catch(err => {
+                alert('เกิดข้อผิดพลาด');
+                btn.disabled = false; btn.textContent = 'บันทึกข้อมูลแจ้งซ่อม';
             });
         });
+
+        // ค้นหาข้อมูล
+        function searchReport() {
+            const id = document.getElementById('searchId').value.trim();
+            if(!id) return alert('กรุณากรอกรหัสรายงาน');
+
+            fetch(`${WEB_APP_URL}?action=search&reportId=${id}`)
+            .then(res => res.json())
+            .then(res => {
+                if(res.success) {
+                    const d = res.data;
+                    document.getElementById('resReportId').textContent = d.reportId;
+                    document.getElementById('resDate').textContent = d.reportDate;
+                    document.getElementById('resInformant').textContent = d.informant;
+                    document.getElementById('resPhone').textContent = d.phone;
+                    document.getElementById('resDistrict').textContent = d.district;
+                    document.getElementById('resLocation').textContent = d.locationDesc;
+                    document.getElementById('resDamage').textContent = d.damageType;
+                    document.getElementById('resUpdateDate').textContent = d.updateDate || '-';
+                    document.getElementById('updateStatus').value = d.status;
+                    document.getElementById('updateNote').value = d.note || '';
+                    document.getElementById('searchResult').classList.remove('hidden');
+                } else {
+                    alert(res.message);
+                    document.getElementById('searchResult').classList.add('hidden');
+                }
+            });
+        }
+
+        // อัปเดตสถานะ
+        function updateStatus() {
+            const data = {
+                action: 'update',
+                reportId: document.getElementById('resReportId').textContent,
+                status: document.getElementById('updateStatus').value,
+                note: document.getElementById('updateNote').value
+            };
+
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(res => {
+                if(res.success) {
+                    alert('อัปเดตสถานะเรียบร้อยแล้ว');
+                    document.getElementById('resUpdateDate').textContent = res.updateDate;
+                } else {
+                    alert('อัปเดตไม่สำเร็จ');
+                }
+            });
+        }
+
+        // โหลดข้อมูลสถิติ
+        function loadStats() {
+            fetch(`${WEB_APP_URL}?action=stats`)
+            .then(res => res.json())
+            .then(res => {
+                if(res.success) {
+                    const s = res.stats;
+                    document.getElementById('statTotal').textContent = s.total;
+                    document.getElementById('statPending').textContent = s.pending;
+                    document.getElementById('statInProgress').textContent = s.inProgress;
+                    document.getElementById('statCompleted').textContent = s.completed;
+                    document.getElementById('statAvgDays').textContent = s.avgDays;
+                }
+            });
+        }
     </script>
 </body>
 </html>
